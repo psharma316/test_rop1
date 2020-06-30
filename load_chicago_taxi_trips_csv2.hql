@@ -1,0 +1,1 @@
+LOAD DATA INPATH 'gs://data-bucket-hive2/HQL/*.csv' INTO TABLE stagingdb1.chicago_taxi_trips_csv2;
