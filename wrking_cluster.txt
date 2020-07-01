@@ -1,0 +1,28 @@
+
+HIVE_DATA_BUCKET=data-bucket-hive2
+SECRETS_BUCKET=secrectkeybucket2
+PROJECT_ID=dataproc-usecase-276215
+REGION=us-west1
+INSTANCE_NAME=hive-metadata
+CLUSTER_NAME=dataproctest2
+SUBNET=ctl
+gcloud dataproc clusters create ${CLUSTER_NAME} \
+                --master-machine-type n1-standard-2 \
+                --master-boot-disk-size 100 \
+                --num-workers 2 \
+                --worker-machine-type n1-standard-2 \
+                --worker-boot-disk-size 100 \
+                --image-version 1.3-deb9 \
+                --max-idle 1800s \
+                --region ${REGION} \
+                --scopes cloud-platform \
+				--no-address \
+				--subnet ${SUBNET} \
+    --initialization-actions gs://goog-dataproc-initialization-actions-${REGION}/cloud-sql-proxy/cloud-sql-proxy.sh \
+    --properties hive:hive.metastore.warehouse.dir=gs://${HIVE_DATA_BUCKET}/hive-warehouse \
+    --metadata "hive-metastore-instance=${PROJECT_ID}:${REGION}:${INSTANCE_NAME}" \
+    --metadata "kms-key-uri=projects/${PROJECT_ID}/locations/global/keyRings/my-key-ring/cryptoKeys/migration-key" \
+    --metadata "db-admin-password-uri=gs://${SECRETS_BUCKET}/admin-password.encrypted" \
+    --metadata "use-cloud-sql-private-ip=true" \
+    --metadata "db-hive-password-uri=gs://${SECRETS_BUCKET}/hive-password.encrypted"
+	
